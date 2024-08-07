@@ -36,6 +36,17 @@ Swagger - localhost:8000/docs
 docker-compose up -d
 ```
 
+### 테스트 실행 방법
+
+위치
+
+- ./conftest.py
+- ./test_url_service.py
+
+```sh
+docker exec -i fastapi pytest
+```
+
 만약 인식 안될시 docker ps를 통해 fastapi서버 컨테이너 ID 사용
 
 ```sh
