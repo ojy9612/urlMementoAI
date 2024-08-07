@@ -1,10 +1,8 @@
 from datetime import timedelta
 
 import shortuuid
-from fastapi import Depends
 
 from src.config.database import url_collection
-from src.config.transactional import transactional
 from src.exception.custom_exception import CustomException
 from src.exception.response_type import ResponseType
 from src.models.url import URLModel
@@ -20,8 +18,7 @@ async def _create_key() -> str:
             return short_key
 
 
-@transactional
-async def create_shorten_url(url_create: URLCreateRequest, db_session=Depends()) -> URLResponse:
+async def create_shorten_url(url_create: URLCreateRequest, db_session) -> URLResponse:
     short_key = await _create_key()
 
     expires_at = None
@@ -34,8 +31,8 @@ async def create_shorten_url(url_create: URLCreateRequest, db_session=Depends())
     return URLResponse(short_key=short_key, expires_at=datetime_to_str(expires_at) if expires_at else None)
 
 
-async def get_original_url(short_key: str) -> str:
-    url = await url_collection.find_one({"short_key": short_key})
+async def get_original_url(short_key: str, db_session) -> str:
+    url = await url_collection.find_one({"short_key": short_key}, session=db_session)
     if url is None:
         raise CustomException(ResponseType.RESOURCE_NOT_FOUND, message=f"등록된 단축 URL이 없습니다. URL: {short_key}")
 
@@ -46,15 +43,15 @@ async def get_original_url(short_key: str) -> str:
         if expires_at < datetime_now_timezone():
             raise CustomException(ResponseType.EXPIRED_RESOURCE, message=f"만료된 단축 URL입니다. URL: {short_key}")
 
-    await url_collection.update_one({"short_key": short_key}, {"$inc": {"clicks": 1}})
+    await url_collection.update_one({"short_key": short_key}, {"$inc": {"clicks": 1}}, session=db_session)
     original_url = url["original_url"]
     if not original_url.startswith(("http://", "https://")):
         original_url = "http://" + original_url
     return original_url
 
 
-async def get_url_stats(short_key: str) -> URLStatsResponse:
-    url = await url_collection.find_one({"short_key": short_key})
+async def get_url_stats(short_key: str, db_session) -> URLStatsResponse:
+    url = await url_collection.find_one({"short_key": short_key}, session=db_session)
     if url is None:
         raise CustomException(ResponseType.RESOURCE_NOT_FOUND, f"단축 URL을 찾을 수 없습니다. short_key: {short_key}")
     url = URLModel.from_mongo(url)

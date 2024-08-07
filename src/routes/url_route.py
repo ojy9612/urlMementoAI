@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Path
+from fastapi import APIRouter, Path, Depends
+from pymongo.client_session import ClientSession
 from starlette.responses import RedirectResponse
 
-from src.config.transactional import transactional
+from src.config.transactional import transactional, get_db_session
 from src.models.common_response_model import CommonResponseModel
 from src.schemas.common_response import CommonResponse
 from src.schemas.url_schema import URLCreateRequest, URLStatsResponse, URLResponse
@@ -22,8 +23,10 @@ router = APIRouter()
                  "422": {"$ref": "#/components/responses/ValidationErrorResponse"},
                  "500": {"$ref": "#/components/responses/InternalServerErrorResponse"},
              })
-async def shorten_url(url_create: URLCreateRequest) -> CommonResponse:
-    data = await create_shorten_url(url_create)
+@transactional
+async def shorten_url(url_create: URLCreateRequest,
+                      db_session: ClientSession = Depends(get_db_session)) -> CommonResponse:
+    data = await create_shorten_url(url_create, db_session)
     return CommonResponse.success(data=data)
 
 
@@ -38,8 +41,9 @@ async def shorten_url(url_create: URLCreateRequest) -> CommonResponse:
                 "422": {},
             })
 @transactional
-async def redirect_url(short_key: str = Path(..., example="AH64t3", description="단축 URL")) -> RedirectResponse:
-    original_url = await get_original_url(short_key)
+async def redirect_url(short_key: str = Path(..., example="AH64t3", description="단축 URL"),
+                       db_session: ClientSession = Depends(get_db_session)) -> RedirectResponse:
+    original_url = await get_original_url(short_key, db_session)
     return RedirectResponse(url=original_url, status_code=301)
 
 
@@ -54,6 +58,7 @@ async def redirect_url(short_key: str = Path(..., example="AH64t3", description=
                 "422": {},
             })
 @transactional
-async def url_stats(short_key: str = Path(..., example="AH64t3", description="단축 URL")) -> CommonResponse:
-    data = await get_url_stats(short_key)
+async def url_stats(short_key: str = Path(..., example="AH64t3", description="단축 URL"),
+                    db_session: ClientSession = Depends(get_db_session)) -> CommonResponse:
+    data = await get_url_stats(short_key, db_session)
     return CommonResponse.success(data=data)
