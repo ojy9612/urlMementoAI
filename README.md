@@ -24,6 +24,8 @@ DB는 MongoDB를 채택했습니다.
 
 ## 프로젝트 실행 방법
 
+**Docker Network를 사용하기에 다른방식으로 실행 시 DB에 접근이 불가능 합니다.**
+
 서버 - localhost:8000
 
 Swagger - localhost:8000/docs
@@ -40,4 +42,4 @@ docker-compose up -d
 docker exec -i [컨테이너 ID] pytest
 ```
 
-(컨테이너가 올라간 후 약 10초 뒤에 Replica Set 완료)
+컨테이너가 올라간 후 약 10초 뒤에 Replica Set 완료
