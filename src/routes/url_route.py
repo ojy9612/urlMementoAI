@@ -4,18 +4,19 @@ from starlette.responses import RedirectResponse
 from src.config.transactional import transactional
 from src.models.common_response_model import CommonResponseModel
 from src.schemas.common_response import CommonResponse
-from src.schemas.url_schema import URLCreateRequest, URLStatsResponse
+from src.schemas.url_schema import URLCreateRequest, URLStatsResponse, URLResponse
 from src.service.url_service import get_original_url, get_url_stats, create_shorten_url
 
 router = APIRouter()
 
 
 @router.post("/shorten",
-             response_model=CommonResponseModel[URLCreateRequest],
+             response_model=CommonResponseModel[URLResponse],
              summary="단축 URL 생성",
              description="URL을 Redirect시키는 단축키와 만료일자를 생성합니다.  \n  \n"
                          " - url : **required** (.)을 포함하는 문자열 입력  \n"
-                         " - expires_days : 1~30 사이의 정수 입력 (미입력시 만료기한이 없습니다.)",
+                         " - expires_days : 1~30 사이의 정수 입력 (미입력시 만료기한이 없습니다.)  \n \n"
+                         "expries_at이 제공되지 않았다면 만료되지 않는 URL입니다.",
              responses={
                  "422": {"$ref": "#/components/responses/ValidationErrorResponse"},
                  "500": {"$ref": "#/components/responses/InternalServerErrorResponse"},
