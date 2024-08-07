@@ -16,7 +16,8 @@ router = APIRouter()
              description="URL을 Redirect시키는 단축키와 만료일자를 생성합니다.  \n  \n"
                          " - url : **required** (.)을 포함하는 문자열 입력  \n"
                          " - expires_days : 1~30 사이의 정수 입력 (미입력시 만료기한이 없습니다.)  \n \n"
-                         "expries_at이 제공되지 않았다면 만료되지 않는 URL입니다.",
+                         "expries_at이 제공되지 않았다면 만료되지 않는 URL입니다.  \n"
+                         "매일 자정에 만료된 URL이 삭제됩니다.",
              responses={
                  "422": {"$ref": "#/components/responses/ValidationErrorResponse"},
                  "500": {"$ref": "#/components/responses/InternalServerErrorResponse"},

@@ -25,8 +25,8 @@ class URLCreateRequest(BaseModel):
 
 
 class URLResponse(BaseModel):
-    short_key: str
-    expires_at: Optional[str]
+    short_key: str = Field(..., examples=["https://www.google.com", "naver.com"])
+    expires_at: Optional[str] = Field(None, examples=["2024-08-07 21:07:22"])
 
 
 class URLStatsResponse(BaseModel):
