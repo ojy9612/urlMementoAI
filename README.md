@@ -24,6 +24,10 @@ DB는 MongoDB를 채택했습니다.
 
 ## 프로젝트 실행 방법
 
+서버 - localhost:8000
+
+Swagger - localhost:8000/docs
+
 루트 디렉토리에서 다음 명령어를 실행합니다.
 
 ```sh
@@ -35,3 +39,5 @@ docker-compose up -d
 ```sh
 docker exec -i [컨테이너 ID] pytest
 ```
+
+(컨테이너가 올라간 후 약 10초 뒤에 Replica Set 완료)
