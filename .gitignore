@@ -10,7 +10,6 @@ out/
 *.pyo
 *.pyd
 __pycache__/
-*.env
 *.venv
 ENV/
 env/
@@ -119,7 +118,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env.bak/
 venv.bak/
