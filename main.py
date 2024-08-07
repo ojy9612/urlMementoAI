@@ -1,5 +1,3 @@
-import logging
-
 from fastapi import FastAPI
 
 from src.batch.scheduler import start_scheduler
@@ -13,7 +11,7 @@ app.include_router(url_router)
 exception_setup.setup_exception_handlers(app)
 custom_openapi(app)
 start_scheduler()
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == "__main__":
     import uvicorn
